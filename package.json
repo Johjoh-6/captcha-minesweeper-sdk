@@ -47,5 +47,8 @@
 	},
 	"bugs": {
 		"url": "https://github.com/Johjoh-6/captcha-minesweeper-sdk/issues"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
 	}
 }
