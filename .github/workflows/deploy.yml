@@ -25,8 +25,14 @@ jobs:
             - name: Install
               run: npm ci
 
+            - name: Build SDK
+              run: npm run build
+
             - name: Build demo
-              run: npm run build:demo
+              run: |
+                  mkdir -p demo-dist
+                  cp demo/index.html demo-dist/
+                  cp dist/captcha-sweeper.es.js demo-dist/
 
             - name: Setup Pages
               uses: actions/configure-pages@v4
