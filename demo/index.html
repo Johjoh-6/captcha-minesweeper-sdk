@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Captcha Sweeper SDK Demo</title>
+	</head>
+	<body>
+		<script type="module">
+			// Dev: use source entry so Vite can serve it without a build
+			import "/src/index.ts";
+		</script>
+
+		<captcha-sweeper
+			baseurl="https://captcha-sweeper-739024065267.europe-west9.run.app"
+			difficulty="2"
+			autoinit="true"
+		>
+		</captcha-sweeper>
+
+		<script>
+			// Listen to events
+			document
+				.querySelector("captcha-sweeper")
+				.addEventListener("solved", () => {
+					console.log("Human verified!");
+				});
+		</script>
+	</body>
+</html>
