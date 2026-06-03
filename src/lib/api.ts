@@ -132,7 +132,7 @@ export class CaptchaSweeper {
 	 */
 	async getCaptcha(): Promise<CaptchaState> {
 		try {
-			return await this.request<CaptchaState>("/captcha/");
+			return await this.request<CaptchaState>("/captcha");
 		} catch (error) {
 			if (
 				error instanceof Error &&
