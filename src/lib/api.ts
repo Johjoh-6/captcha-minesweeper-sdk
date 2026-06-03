@@ -25,7 +25,7 @@ export class CaptchaSweeper {
 	constructor(
 		baseUrl: string,
 		identifier: "session" | "jwt" | "cookie" = "session",
-		targetIdentifier: string = "x-session-id",
+		targetIdentifier: string = "X-Session-Id",
 		version: string = "v1",
 		options: CaptchaSweeperOptions = {},
 	) {
