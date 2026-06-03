@@ -11,16 +11,20 @@
 		baseurl = "https://YOUR_GCLOUD_URL",
 		difficulty = 1,
 		autoinit = true,
+		identifier = "session",
 	} = $props<{
 		title?: string;
 		subtitle?: string;
 		baseurl?: string;
 		difficulty?: number | string;
 		autoinit?: boolean | string;
+		identifier?: "session" | "jwt" | "cookie";
 	}>();
 
 	// --- State ---
-	let api = $derived(baseurl ? new CaptchaSweeper(baseurl) : null);
+	let api = $derived(
+		baseurl ? new CaptchaSweeper(baseurl, identifier) : null,
+	);
 	let state: CaptchaState | null = $state(null);
 	let loading = $state(false);
 	let error: string | null = $state(null);
@@ -104,6 +108,14 @@
 		return String(cell);
 	}
 </script>
+
+<!--
+@component
+Captcha Minesweeper
+
+The arguments `baseurl` are required.
+`identifier` is optional and defaults to `"session"`. there is three options for `identifier`: `"session"`, `"jwt"`, and `"cookie"`.
+-->
 
 <!-- Custom Element Template (no Svelte-specific features) -->
 <div class="captcha-sweeper">

@@ -6,20 +6,26 @@ import { CaptchaState, CaptchaSweeperOptions } from "./type";
  */
 export class CaptchaSweeper {
 	private baseUrl: string;
+	private identifier: "session" | "jwt" | "cookie" = "session";
+	private targetIdentifier: string = "X-Session-ID";
 	private version: string;
 	private timeout: number;
 	private headers: Record<string, string>;
 	private credentials: RequestCredentials;
+	private sessionId: string | null;
 
 	/**
 	 * Creates a new CaptchaSweeper API client instance
 	 * @param baseUrl - The API endpoint URL (required)
+	 * @param identifier - The authentication identifier to use (optional)
 	 * @param version - The API version to use (optional)
 	 * @param options - Configuration options
 	 * @throws Error if baseUrl is not provided
 	 */
 	constructor(
 		baseUrl: string,
+		identifier: "session" | "jwt" | "cookie" = "session",
+		targetIdentifier: string = "x-session-id",
 		version: string = "v1",
 		options: CaptchaSweeperOptions = {},
 	) {
@@ -28,6 +34,8 @@ export class CaptchaSweeper {
 		}
 
 		this.baseUrl = baseUrl.replace(/\/$/, ""); // Remove trailing slash
+		this.identifier = identifier;
+		this.targetIdentifier = targetIdentifier;
 		this.version = version;
 		this.timeout = options.timeout ?? 10000;
 		this.headers = {
@@ -35,6 +43,7 @@ export class CaptchaSweeper {
 			...(options.headers ?? {}),
 		};
 		this.credentials = options.credentials ?? "include";
+		this.sessionId = null;
 	}
 
 	/**
@@ -57,6 +66,12 @@ export class CaptchaSweeper {
 				...options,
 				headers: {
 					...this.headers,
+					...(this.identifier === "session"
+						? { [this.targetIdentifier]: this.sessionId }
+						: {}),
+					...(this.identifier === "jwt"
+						? { Authorization: `Bearer ${this.sessionId}` }
+						: {}),
 					...(options.headers ?? {}),
 				},
 				credentials: options.credentials ?? this.credentials,
@@ -72,7 +87,7 @@ export class CaptchaSweeper {
 						`HTTP ${response.status}: ${response.statusText}`,
 				);
 			}
-
+			this.extractSessionId(response);
 			return (await response.json()) as T;
 		} catch (error) {
 			if (error instanceof Error) {
@@ -83,6 +98,22 @@ export class CaptchaSweeper {
 			throw error;
 		} finally {
 			clearTimeout(timeoutId);
+		}
+	}
+
+	extractSessionId(response: Response): void {
+		if (this.identifier === "session") {
+			this.sessionId = response.headers.get(this.targetIdentifier);
+		} else if (this.identifier === "jwt") {
+			const auth = response.headers.get("Authorization");
+			if (auth) {
+				this.sessionId = auth.split(" ")[1];
+			}
+		} else if (this.identifier === "cookie") {
+			const cookie = response.headers.get("Set-Cookie");
+			if (cookie) {
+				this.sessionId = cookie.split(";")[0];
+			}
 		}
 	}
 
