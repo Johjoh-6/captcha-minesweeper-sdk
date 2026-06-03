@@ -66,10 +66,10 @@ export class CaptchaSweeper {
 				...options,
 				headers: {
 					...this.headers,
-					...(this.identifier === "session"
+					...(this.identifier === "session" && this.sessionId
 						? { [this.targetIdentifier]: this.sessionId }
 						: {}),
-					...(this.identifier === "jwt"
+					...(this.identifier === "jwt" && this.sessionId
 						? { Authorization: `Bearer ${this.sessionId}` }
 						: {}),
 					...(options.headers ?? {}),
